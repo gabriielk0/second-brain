@@ -49,11 +49,16 @@ export default function ProjetoDetalhe() {
 
   const getTipoBadgeColor = (tipo: string) => {
     switch (tipo) {
-      case 'tarefa': return 'bg-blue-500/20 text-blue-400';
-      case 'ideia': return 'bg-purple-500/20 text-purple-400';
-      case 'reflexao': return 'bg-green-500/20 text-green-400';
-      case 'referencia': return 'bg-yellow-500/20 text-yellow-400';
-      default: return 'bg-gray-500/20 text-gray-400';
+      case 'tarefa':
+        return 'bg-blue-500/20 text-blue-400';
+      case 'ideia':
+        return 'bg-purple-500/20 text-purple-400';
+      case 'reflexao':
+        return 'bg-green-500/20 text-green-400';
+      case 'referencia':
+        return 'bg-yellow-500/20 text-yellow-400';
+      default:
+        return 'bg-gray-500/20 text-gray-400';
     }
   };
 
@@ -98,12 +103,17 @@ export default function ProjetoDetalhe() {
               style={{ backgroundColor: projeto.cor }}
             />
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-foreground mb-2">{projeto.nome}</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                {projeto.nome}
+              </h2>
               {projeto.descricao && (
-                <p className="text-muted-foreground mb-4">{projeto.descricao}</p>
+                <p className="text-muted-foreground mb-4">
+                  {projeto.descricao}
+                </p>
               )}
               <p className="text-sm text-muted-foreground">
-                {projeto.notas.length} nota{projeto.notas.length !== 1 ? 's' : ''} • Criado em{' '}
+                {projeto.notas.length} nota
+                {projeto.notas.length !== 1 ? 's' : ''} • Criado em{' '}
                 {new Date(projeto.criadoEm).toLocaleDateString('pt-BR')}
               </p>
             </div>
@@ -132,7 +142,9 @@ export default function ProjetoDetalhe() {
                     )}
                     <p className="text-foreground mb-3">{nota.conteudo}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTipoBadgeColor(nota.tipo)}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getTipoBadgeColor(nota.tipo)}`}
+                  >
                     {nota.tipo}
                   </span>
                 </div>

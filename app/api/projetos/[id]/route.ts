@@ -4,7 +4,7 @@ import { verifySession } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await verifySession();
@@ -12,6 +12,7 @@ export async function GET(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const params = await context.params;
     const projeto = await prisma.projeto.findUnique({
       where: { id: params.id },
       include: {
@@ -26,7 +27,10 @@ export async function GET(
     });
 
     if (!projeto) {
-      return NextResponse.json({ error: 'Projeto não encontrado' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Projeto não encontrado' },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(projeto);
@@ -34,14 +38,14 @@ export async function GET(
     console.error('Erro ao buscar projeto:', error);
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await verifySession();
@@ -49,6 +53,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const params = await context.params;
     const data = await request.json();
 
     const projeto = await prisma.projeto.update({
@@ -61,14 +66,14 @@ export async function PUT(
     console.error('Erro ao atualizar projeto:', error);
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await verifySession();
@@ -76,6 +81,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const params = await context.params;
     await prisma.projeto.update({
       where: { id: params.id },
       data: { status: 'arquivado' },
@@ -86,7 +92,7 @@ export async function DELETE(
     console.error('Erro ao arquivar projeto:', error);
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

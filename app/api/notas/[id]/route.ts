@@ -4,7 +4,7 @@ import { verifySession } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await verifySession();
@@ -12,6 +12,7 @@ export async function GET(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const params = await context.params;
     const nota = await prisma.nota.findUnique({
       where: { id: params.id },
       include: {
@@ -20,7 +21,10 @@ export async function GET(
     });
 
     if (!nota) {
-      return NextResponse.json({ error: 'Nota não encontrada' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Nota não encontrada' },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(nota);
@@ -28,14 +32,14 @@ export async function GET(
     console.error('Erro ao buscar nota:', error);
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await verifySession();
@@ -43,6 +47,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const params = await context.params;
     const data = await request.json();
 
     const nota = await prisma.nota.update({
@@ -58,14 +63,14 @@ export async function PUT(
     console.error('Erro ao atualizar nota:', error);
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await verifySession();
@@ -73,6 +78,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
+    const params = await context.params;
     await prisma.nota.delete({
       where: { id: params.id },
     });
@@ -82,7 +88,7 @@ export async function DELETE(
     console.error('Erro ao excluir nota:', error);
     return NextResponse.json(
       { error: 'Erro interno do servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
