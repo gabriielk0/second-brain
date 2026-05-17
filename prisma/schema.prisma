@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Nota {
+  id          String    @id @default(uuid())
+  conteudo    String
+  tipo        String    @default("ideia") // "ideia" | "tarefa" | "reflexao" | "referencia" | "outro"
+  titulo      String?
+  resumo      String?
+  tags        String[]
+  status      String    @default("ativa") // "ativa" | "arquivada" | "concluida"
+  prioridade  String?   // "alta" | "media" | "baixa"
+  prazo       DateTime?
+  projetoId   String?
+  projeto     Projeto?  @relation(fields: [projetoId], references: [id])
+  criadoEm    DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+}
+
+model Projeto {
+  id          String   @id @default(uuid())
+  nome        String
+  descricao   String?
+  cor         String   @default("#3b82f6")
+  status      String   @default("ativo") // "ativo" | "arquivado"
+  criadoEm    DateTime @default(now())
+  notas       Nota[]
+}
