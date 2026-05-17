@@ -3,6 +3,19 @@ import { prisma } from '@/lib/prisma';
 import { verifySession } from '@/lib/auth';
 import Anthropic from '@anthropic-ai/sdk';
 
+interface Nota {
+  tipo: string;
+  titulo: string | null;
+  conteudo: string;
+  criadoEm: Date;
+}
+
+interface Tarefa {
+  titulo: string | null;
+  conteudo: string;
+  prazo: Date | null;
+}
+
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
@@ -50,15 +63,15 @@ export async function POST() {
     // Preparar dados para a IA
     const notasTexto = notas
       .map(
-        (n) =>
+        (n: Nota) =>
           `- [${n.tipo}] ${n.titulo || n.conteudo.substring(0, 50)}... (${new Date(n.criadoEm).toLocaleDateString('pt-BR')})`,
       )
       .join('\n');
 
     const tarefasTexto = tarefasPendentes
-      .filter((t) => t.prazo)
+      .filter((t: Tarefa) => t.prazo)
       .slice(0, 10)
-      .map((t) => {
+      .map((t: Tarefa) => {
         const dias = Math.floor(
           (new Date(t.prazo!).getTime() - new Date().getTime()) /
             (1000 * 60 * 60 * 24),
