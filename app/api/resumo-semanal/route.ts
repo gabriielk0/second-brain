@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifySession } from '@/lib/auth';
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 interface Nota {
   tipo: string;
@@ -16,9 +16,7 @@ interface Tarefa {
   prazo: Date | null;
 }
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST() {
   try {
@@ -96,21 +94,12 @@ Gere um resumo com as seguintes seções:
 
 Seja conciso e prático. Use formatação markdown para as seções.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-    });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const resumo = response.text();
 
-    const content = message.content[0];
-    if (content.type === 'text') {
-      return NextResponse.json({ resumo: content.text });
-    }
+    return NextResponse.json({ resumo });
 
     throw new Error('Resposta da IA não é texto');
   } catch (error) {

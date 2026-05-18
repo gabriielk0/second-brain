@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { processarNotaComAI } from '@/lib/claude';
+import { processarNotaComAI } from '@/lib/gemini';
 import { verifySession } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
